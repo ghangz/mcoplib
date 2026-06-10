@@ -37,8 +37,8 @@ def collect_errors(root: Path) -> list[str]:
     for name, path in sorted(configs.items()):
         try:
             json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            errors.append(f"invalid JSON in {path.relative_to(root).as_posix()}: {exc}")
+        except (OSError, ValueError) as exc:
+            errors.append(f"invalid JSON or unreadable file in {path.relative_to(root).as_posix()}: {exc}")
 
     return errors
 

@@ -38,6 +38,21 @@ class LintBenchmarkConfigsTest(unittest.TestCase):
 
         self.assertEqual(errors, [])
 
+    def test_reports_unreadable_config_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "benchmark" / "config").mkdir(parents=True)
+            (root / "benchmark" / "runners").mkdir(parents=True)
+            (root / "benchmark" / "config" / "foo.json").write_bytes(b"\xff\xfe")
+            (root / "benchmark" / "runners" / "mcoplib_mxbenchmark_foo_runners.py").write_text(
+                "", encoding="utf-8"
+            )
+
+            errors = collect_errors(root)
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn("invalid JSON or unreadable file", errors[0])
+
 
 if __name__ == "__main__":
     unittest.main()
