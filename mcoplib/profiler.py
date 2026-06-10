@@ -129,7 +129,7 @@ def profiler(
                         activities=activities,
                         schedule=torch.profiler.schedule(
                             wait=0,
-                            warmup=warmup_count,
+                            warmup=0,
                             active=1,
                             repeat=repeat_count
                         ),
