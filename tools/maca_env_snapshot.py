@@ -17,13 +17,22 @@ def _command_version(command: str, args: list[str]) -> dict[str, object]:
     path = shutil.which(command)
     if not path:
         return {"path": "", "available": False, "version": ""}
-    completed = subprocess.run([path, *args], text=True, capture_output=True)
-    return {
-        "path": path,
-        "available": True,
-        "returncode": completed.returncode,
-        "version": (completed.stdout or completed.stderr).strip().splitlines()[:5],
-    }
+    try:
+        completed = subprocess.run([path, *args], text=True, capture_output=True, timeout=5)
+        version = (completed.stdout or completed.stderr).strip().splitlines()[:5]
+        return {
+            "path": path,
+            "available": True,
+            "returncode": completed.returncode,
+            "version": version,
+        }
+    except (subprocess.SubprocessError, OSError) as exc:
+        return {
+            "path": path,
+            "available": True,
+            "returncode": -1,
+            "version": [f"Error: {exc}"],
+        }
 
 
 def snapshot() -> dict[str, object]:
@@ -49,6 +58,7 @@ def main() -> int:
 
     text = json.dumps(snapshot(), indent=2, ensure_ascii=False)
     if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(text + "\n", encoding="utf-8")
     else:
         print(text)
