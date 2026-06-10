@@ -23,15 +23,19 @@ def analyze_file(path: Path, root: Path) -> dict[str, object]:
 
 
 def build_report(root: Path) -> dict[str, object]:
+    op_dir = root / "op"
+    if not op_dir.is_dir():
+        return {"file_count": 0, "total_lines": 0, "top_by_lines": []}
+
     files = [
         analyze_file(path, root)
-        for path in sorted((root / "op").rglob("*"))
+        for path in sorted(op_dir.rglob("*"))
         if path.is_file() and path.suffix in SOURCE_SUFFIXES
     ]
     return {
         "file_count": len(files),
-        "total_lines": sum(int(item["lines"]) for item in files),
-        "top_by_lines": sorted(files, key=lambda item: int(item["lines"]), reverse=True)[:20],
+        "total_lines": sum(item["lines"] for item in files),
+        "top_by_lines": sorted(files, key=lambda item: item["lines"], reverse=True)[:20],
     }
 
 
