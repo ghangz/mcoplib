@@ -16,11 +16,14 @@ class OpSourceInventoryTest(unittest.TestCase):
             (root / "op" / "vllm").mkdir(parents=True)
             (root / "op" / "vllm" / "kernel.cu").write_text("", encoding="utf-8")
             (root / "op" / "vllm" / "README.md").write_text("", encoding="utf-8")
+            (root / "op" / "native_kernel.cu").write_text("", encoding="utf-8")
 
             inventory = build_inventory(root)
 
         self.assertEqual(inventory["groups"]["vllm"]["count"], 1)
         self.assertEqual(inventory["groups"]["vllm"]["files"], ["op/vllm/kernel.cu"])
+        self.assertEqual(inventory["groups"]["native"]["count"], 1)
+        self.assertEqual(inventory["groups"]["native"]["files"], ["op/native_kernel.cu"])
 
 
 if __name__ == "__main__":

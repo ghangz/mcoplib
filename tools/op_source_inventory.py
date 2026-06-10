@@ -30,9 +30,20 @@ def _sources(root: Path, relative_dir: str) -> list[str]:
 
 
 def build_inventory(root: Path) -> dict[str, object]:
+    raw_files: dict[str, list[str]] = {}
+    for name, relative_dir in GROUPS.items():
+        raw_files[name] = _sources(root, relative_dir)
+
+    other_files: set[str] = set()
+    for name in GROUPS:
+        if name != "native":
+            other_files.update(raw_files[name])
+    if "native" in raw_files:
+        raw_files["native"] = [path for path in raw_files["native"] if path not in other_files]
+
     groups: dict[str, object] = {}
     for name, relative_dir in GROUPS.items():
-        files = _sources(root, relative_dir)
+        files = raw_files[name]
         groups[name] = {"root": relative_dir, "count": len(files), "files": files}
     return {"root": str(root), "groups": groups}
 
