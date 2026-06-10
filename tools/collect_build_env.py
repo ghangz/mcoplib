@@ -26,6 +26,7 @@ def _run(command: list[str]) -> dict[str, Any]:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            errors="replace",
             timeout=10,
         )
     except Exception as exc:  # pragma: no cover - defensive diagnostics
