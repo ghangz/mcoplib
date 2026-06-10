@@ -578,7 +578,12 @@ def perform_comparison(cur_raw, hist_raw):
 # =============================================================================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MCOPLIB Operator Performance Benchmark")
-    parser.add_argument("--op", type=str, default=None, help="Operator name (Required, unless --list is used)")
+    parser.add_argument(
+        "--op",
+        type=str,
+        default=None,
+        help="Operator name (Required, unless --list or --list-json is used)",
+    )
     parser.add_argument("--list", action="store_true", help="List all supported operators and exit")
     parser.add_argument("--list-json", action="store_true", help="Print supported operators as JSON and exit")
     parser.add_argument("--csv", type=str, default=None, help="Path to result CSV")
@@ -607,7 +612,7 @@ if __name__ == "__main__":
         sys.exit(1)
     
     if bench is None:
-        print("[ERROR] Runtime environment missing 'nvbench'. Please check configuration.")
+        print("[ERROR] Runtime environment missing 'nvbench'. Please check configuration.", file=sys.stderr)
         sys.exit(1)
 
     # 3. Load Operator
