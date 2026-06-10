@@ -14,7 +14,11 @@ def _test_functions(path: Path) -> tuple[list[str], str]:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
     except SyntaxError as exc:
         return [], f"{exc.__class__.__name__}: {exc}"
-    tests = sorted(node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"))
+    tests = sorted(
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_")
+    )
     return tests, ""
 
 

@@ -11,12 +11,17 @@ class UnitTestInventoryTest(unittest.TestCase):
             root = Path(tmpdir)
             unit = root / "unit_test"
             unit.mkdir()
-            (unit / "test_demo.py").write_text("def test_a(): pass\ndef helper(): pass\n", encoding="utf-8")
+            (unit / "test_demo.py").write_text(
+                "def test_a(): pass\n"
+                "async def test_async_case(): pass\n"
+                "def helper(): pass\n",
+                encoding="utf-8",
+            )
 
             report = inventory(root)
 
         self.assertEqual(report["file_count"], 1)
-        self.assertEqual(report["test_function_count"], 1)
+        self.assertEqual(report["test_function_count"], 2)
 
 
 if __name__ == "__main__":
