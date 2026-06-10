@@ -23,6 +23,19 @@ def build_command(root: Path, op: str, extra_args: list[str]) -> list[str]:
 
 
 def run_with_logs(root: Path, op: str, log_root: Path, extra_args: list[str]) -> int:
+    if not op or not all(ch.isalnum() or ch == "_" for ch in op):
+        print(
+            f"Error: Invalid operator name '{op}'. Only alphanumeric characters and underscores are allowed.",
+            file=sys.stderr,
+        )
+        return 1
+
+    benchmark_dir = root / "benchmark"
+    script_path = benchmark_dir / "mcoplib_mxbenchmark_ops.py"
+    if not script_path.is_file():
+        print(f"Error: Benchmark script not found at '{script_path}'", file=sys.stderr)
+        return 1
+
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + f"_{op}"
     run_dir = log_root / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -37,14 +50,20 @@ def run_with_logs(root: Path, op: str, log_root: Path, extra_args: list[str]) ->
             "MACA_PATH": os.environ.get("MACA_PATH"),
             "CUDA_HOME": os.environ.get("CUDA_HOME"),
             "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH"),
+            "PYTHONPATH": os.environ.get("PYTHONPATH"),
+            "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES"),
+            "MACA_VISIBLE_DEVICES": os.environ.get("MACA_VISIBLE_DEVICES"),
         },
     }
-    (run_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    (run_dir / "metadata.json").write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     with (run_dir / "stdout.log").open("w", encoding="utf-8") as out, (
         run_dir / "stderr.log"
     ).open("w", encoding="utf-8") as err:
-        proc = subprocess.run(command, cwd=root / "benchmark", stdout=out, stderr=err, text=True)
+        proc = subprocess.run(command, cwd=benchmark_dir, stdout=out, stderr=err, text=True)
 
     (run_dir / "exit_code.txt").write_text(str(proc.returncode) + "\n", encoding="utf-8")
     print(f"Benchmark logs written to: {run_dir}")
