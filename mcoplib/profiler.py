@@ -20,7 +20,7 @@ def _timestamp() -> str:
 
 
 def _trace_file_path(output_dir, func_name, rank):
-    safe_name = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in func_name)
+    safe_name = "".join(ch if ch.isalnum() or ch in "._-" else "_" for ch in func_name)[:128]
     filename = (
         f"{safe_name}_trace_rank_{rank}_"
         f"{_timestamp()}_pid_{os.getpid()}_tid_{threading.get_ident()}.json"
