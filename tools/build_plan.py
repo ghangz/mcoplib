@@ -11,6 +11,8 @@ from pathlib import Path
 
 
 SUBMODULE_FLAGS = [
+    "BUILD_VLLM_SUBMODULE",
+    "BUILD_SGLANG_SUBMODULE",
     "BUILD_LMDEPLOY_SUBMODULE",
     "BUILD_DEFAULT_OP_SUBMODULE",
     "BUILD_MOE_SUBMODULE",
@@ -26,7 +28,8 @@ def read_maca_version(maca_path: str | None) -> str | None:
     version_file = Path(maca_path) / "Version.txt"
     if not version_file.is_file():
         return None
-    return version_file.read_text(encoding="utf-8").splitlines()[0].split(":")[-1].strip()
+    lines = version_file.read_text(encoding="utf-8").splitlines()
+    return lines[0].split(":")[-1].strip() if lines else None
 
 
 def build_plan(root: Path) -> dict[str, object]:

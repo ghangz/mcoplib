@@ -16,6 +16,12 @@ class BuildPlanTest(unittest.TestCase):
             Path(tmp, "Version.txt").write_text("Version:3.5.3.20\n", encoding="utf-8")
             self.assertEqual(read_maca_version(tmp), "3.5.3.20")
 
+            Path(tmp, "Version.txt").write_text("", encoding="utf-8")
+            self.assertIsNone(read_maca_version(tmp))
+
+            Path(tmp, "Version.txt").write_text("Version3.5.3.20\n", encoding="utf-8")
+            self.assertEqual(read_maca_version(tmp), "Version3.5.3.20")
+
     def test_build_plan_uses_default_submodule_flags(self):
         root = Path.cwd()
         old = os.environ.pop("BUILD_DEFAULT_OP_SUBMODULE", None)
@@ -26,6 +32,8 @@ class BuildPlanTest(unittest.TestCase):
                 os.environ["BUILD_DEFAULT_OP_SUBMODULE"] = old
 
         self.assertEqual(plan["submodules"]["BUILD_DEFAULT_OP_SUBMODULE"], "ON")
+        self.assertEqual(plan["submodules"]["BUILD_VLLM_SUBMODULE"], "ON")
+        self.assertEqual(plan["submodules"]["BUILD_SGLANG_SUBMODULE"], "ON")
 
 
 if __name__ == "__main__":
