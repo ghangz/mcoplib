@@ -9,8 +9,8 @@ import itertools
 import json
 
 
-DEFAULT_TESTS = ['unit_test/test_rms_norm.py', 'unit_test/test_fused_moe_gate.py']
-DIMENSIONS = {'dtype': ['fp16', 'bf16'], 'scope': ['smoke', 'full']}
+DEFAULT_TESTS = ["unit_test/test_rms_norm.py", "unit_test/test_fused_moe_gate.py"]
+DIMENSIONS = {"dtype": ["fp16", "bf16"], "scope": ["smoke", "full"]}
 
 
 def build_matrix(tests: list[str]) -> list[dict[str, str]]:
@@ -26,8 +26,8 @@ def build_matrix(tests: list[str]) -> list[dict[str, str]]:
 
 def self_test() -> None:
     rows = build_matrix(DEFAULT_TESTS[:1])
-    assert rows
-    assert "test" in rows[0]
+    if not rows or "test" not in rows[0]:
+        raise RuntimeError(f"self-test failed: {rows}")
     print(json.dumps({"ok": True, "rows": len(rows)}, ensure_ascii=False))
 
 
