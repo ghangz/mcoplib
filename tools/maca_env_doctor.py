@@ -12,14 +12,35 @@ import subprocess
 from pathlib import Path
 
 
-DEFAULT_PATHS = ['/opt/maca', '/opt/maca-3.1.0']
+DEFAULT_PATHS = ["/opt/maca", "/opt/maca-3.1.0"]
 
 
 def command_output(cmd: list[str]) -> dict[str, object]:
     executable = shutil.which(cmd[0])
     if executable is None:
-        return {"command": cmd, "available": False, "stdout": "", "stderr": "", "returncode": None}
-    proc = subprocess.run(cmd, text=True, encoding="utf-8", errors="replace", capture_output=True)
+        return {
+            "command": cmd,
+            "available": False,
+            "stdout": "",
+            "stderr": "",
+            "returncode": None,
+        }
+    try:
+        proc = subprocess.run(
+            cmd,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+        )
+    except OSError as exc:
+        return {
+            "command": cmd,
+            "available": True,
+            "stdout": "",
+            "stderr": str(exc),
+            "returncode": None,
+        }
     return {
         "command": cmd,
         "available": True,
@@ -46,8 +67,8 @@ def collect(extra_paths: list[str]) -> dict[str, object]:
 
 def self_test() -> None:
     data = collect([])
-    assert "tools" in data
-    assert "environment" in data
+    if "tools" not in data or "environment" not in data:
+        raise RuntimeError(f"self-test failed: {data}")
     print(json.dumps({"ok": True, "tool_count": len(data["tools"])}, ensure_ascii=False))
 
 
