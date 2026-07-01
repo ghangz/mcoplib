@@ -9,10 +9,7 @@ def _is_profiler_enabled() -> bool:
     Env switch: PROFILER_ENABLED=false/0/off/no -> disabled, else enabled.
     """
     v = os.getenv("PROFILER_ENABLED", "1")
-    try:
-        return str(v).strip().lower() not in {"0", "false", "off", "no"}
-    except Exception:
-        return True
+    return v.strip().lower() not in {"0", "false", "off", "no"}
 
 
 def _timestamp() -> str:
