@@ -8,7 +8,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_DIR = os.path.join(SCRIPT_DIR, "config")
 RUNNERS_DIR = os.path.join(SCRIPT_DIR, "runners")
 TARGET_SCRIPT = os.path.join(SCRIPT_DIR, "mcoplib_mxbenchmark_ops.py")
-OUTPUT_FILE = os.path.join(SCRIPT_DIR, "teslalloutput.txt")
+OUTPUT_FILE = os.path.join(SCRIPT_DIR, "testalloutput.txt")
 
 STATISTICS_DIR = os.path.join(SCRIPT_DIR, "statistics")
 CSV_FILENAME = "mcoplib_ops_performance_C500.csv"

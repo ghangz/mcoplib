@@ -16,4 +16,5 @@ def test_testall_paths_are_script_relative():
         testall.CSV_SAVE_PATH,
     ):
         assert os.path.isabs(path)
-        assert Path(path).resolve().is_relative_to(script_dir)
+        resolved = Path(path).resolve()
+        assert resolved == script_dir or script_dir in resolved.parents
